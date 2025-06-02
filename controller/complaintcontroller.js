@@ -136,14 +136,14 @@ export const login = async (req, res) => {
       return res.status(401).json({ success: false, message: "Invalid password" });
     }
 
-    // ✅ Create JWT token
+    
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      'abc', // secret key (same as used in middleware)
+      'abc', 
       { expiresIn: '1d' }
     );
 
-    console.log("✅ Login successful for user:", email);
+    console.log(" Login successful for user:", email);
 
     return res.status(200).json({
       success: true,
