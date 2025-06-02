@@ -1,25 +1,23 @@
 
 import Complaint from "../Models/Complaint.js";
-import User from "../Models/Register.js"; // Capitalized correctly
+import User from "../Models/Register.js"; 
 
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt'
-import Feedback from '../models/Feedback.js';
+import bcrypt from 'bcryptjs';
+import Feedback from '../Models/Feedback.js';
 
 
 export const create= async (req, res) => {
   try {
-    // Assuming you have auth middleware that sets req.user with logged-in user data
     const userId = req.user._id;
 
-    // Validate required fields here as needed
 
     const complaint = new Complaint({
       description: req.body.description,
       complaintType: req.body.complaintType,
       location: req.body.location,
       file: req.body.file,
-      userId: userId, // <-- Save userId here!
+      userId: userId,
     });
 
     await complaint.save();
@@ -41,17 +39,17 @@ export const addimage = async (req, res) => {
     const { userId, description, complaintType, location } = req.body;
     const filePath = req.file?.filename || "";
 
-    // Ensure userId exists
+    
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    // Validate userId format
+    
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ error: "Invalid user ID format" });
     }
 
-    // Find user by ID
+    
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found with this ID" });
@@ -70,7 +68,7 @@ export const addimage = async (req, res) => {
     
     res.status(201).json({ success: true, data: savedComplaint });
   } catch (error) {
-    console.error("❌ Error adding complaint:", error);
+    console.error(" Error adding complaint:", error);
     res.status(500).json({ error: "Internal server error", details: error.message });
   }
 };

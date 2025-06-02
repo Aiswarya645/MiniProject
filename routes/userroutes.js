@@ -1,7 +1,7 @@
 import express from 'express';
 import { create, views, register, addimage, login, getUserComplaints, resolveComplaint, deleteComplaint, allUsers, allComplaints, addFeedback, myComplaints, updateProfile, rejectComplaint, approveComplaint, getComplaintById, getAllFeedback, deleteUserAccount } from '../controller/complaintcontroller.js';
 import { upload } from '../multer.js';
-import { verifytoken } from '../middleware/auth.js'; // adjust path if needed
+import { verifytoken } from '../middleware/auth.js'; 
 
 
 

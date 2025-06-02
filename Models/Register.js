@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   address: { type: String }, 
   idProof: { type: String },
-  role: { type: String, enum: ["admin", "user"], default: "user" }, // ✅ NEW
+  role: { type: String, enum: ["admin", "user"], default: "user" },
   createdAt: { type: Date, default: Date.now }
 });
 
