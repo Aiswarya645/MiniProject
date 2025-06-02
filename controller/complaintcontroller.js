@@ -250,7 +250,7 @@ export const myComplaints = async (req, res) => {
 
     const complaints = await Complaint.find({ userId }).sort({ createdAt: -1 });
 
-    // Wrap complaints in a success response object
+    
     res.status(200).json({ success: true, complaints });
   } catch (error) {
     console.error("Error fetching user complaints:", error);
@@ -384,7 +384,7 @@ export const rejectComplaint = async (req, res) => {
 
 export const allUsers = async (req, res) => {
   try {
-    console.log("📝 Fetching all users..."); 
+    console.log(" Fetching all users..."); 
 
     const users = await User.find().select("name email mobile address idProof reports");
 
@@ -469,7 +469,7 @@ export const getAllFeedback = async (req, res) => {
 };
 export const deleteUserAccount = async (req, res) => {
   try {
-    const userId = req.user.id; // or req.user._id depending on what you encoded in token
+    const userId = req.user.id; 
     await User.findByIdAndDelete(userId);
     res.status(200).json({ message: 'Account deleted successfully' });
   } catch (error) {
