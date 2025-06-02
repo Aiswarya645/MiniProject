@@ -22,3 +22,5 @@ connectDB().then(()=>{
 })
 
 app.use("/user",userroter)
+app.use('/uploads', express.static('uploads'));
+

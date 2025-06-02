@@ -1,51 +1,79 @@
 
 import Complaint from "../Models/Complaint.js";
-import user from "../Models/Register.js"
+import User from "../Models/Register.js"; // Capitalized correctly
+
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import Feedback from '../models/Feedback.js';
 
-export const create = async (req, res) => {
+
+export const create= async (req, res) => {
   try {
-    const complaint = new Complaint(req.body);
-    const saved = await complaint.save();
-    res.json(saved);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    // Assuming you have auth middleware that sets req.user with logged-in user data
+    const userId = req.user._id;
+
+    // Validate required fields here as needed
+
+    const complaint = new Complaint({
+      description: req.body.description,
+      complaintType: req.body.complaintType,
+      location: req.body.location,
+      file: req.body.file,
+      userId: userId, // <-- Save userId here!
+    });
+
+    await complaint.save();
+
+    res.status(201).json({ message: "Complaint created successfully", complaint });
+  } catch (error) {
+    console.error("Error creating complaint:", error);
+    res.status(500).json({ message: "Failed to create complaint" });
   }
 };
+
 
 
 import mongoose from 'mongoose';
 
+
 export const addimage = async (req, res) => {
   try {
+    const { userId, description, complaintType, location } = req.body;
     const filePath = req.file?.filename || "";
-    const userIdStr = req.body.userId;
 
-    if (!mongoose.Types.ObjectId.isValid(userIdStr)) {
-      return res.status(400).json({ error: "Invalid userId" });
+    // Ensure userId exists
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
     }
 
-    const userId = new mongoose.Types.ObjectId(userIdStr);
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid user ID format" });
+    }
 
+    // Find user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found with this ID" });
+    }
+
+    // Save complaint with correctly formatted userId
     const newComplaint = new Complaint({
-      description: req.body.description,
-      complaintType: req.body.complaintType,
-      location: req.body.location,
+      description,
+      complaintType,
+      location,
       file: filePath,
-      userId: userId,
+      userId: user._id, // Directly reference the found user
     });
 
     const savedComplaint = await newComplaint.save();
-    res.json(savedComplaint);
-  } catch (e) {
-    console.error("Add Complaint Error:", e);
-    res.status(500).json({ error: e.message });
+    
+    res.status(201).json({ success: true, data: savedComplaint });
+  } catch (error) {
+    console.error("❌ Error adding complaint:", error);
+    res.status(500).json({ error: "Internal server error", details: error.message });
   }
 };
-
-
-
 
 
 
@@ -59,54 +87,81 @@ export const views = async (req, res) => {
 };
 
 
+export const register = async (req, res) => {
+  try {
+    console.log("📝 Received registration request:", req.body);
 
-
- export const register = async (req, res) => {
-    try {
-        const existingmail = await user.findOne({ email: req.body.email });
-
-        if (existingmail) {
-            return res.json('mail already exist');
-
-        }
-        const hashedPassword = await bcrypt.hash(req.body.password, 10)
-        console.log(hashedPassword);
-        const userData = { ...req.body, password: hashedPassword }
-
-        const newuser = await new user(userData)
-        const saveduser = await newuser.save()
-        return res.json(saveduser)
-
+    if (!req.body.name || !req.body.email || !req.body.password || !req.body.mobile) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
     }
-    catch (e) {
-        console.error(e);
-        return res.status(500).json({ message: "error occured during register" })
-    }
-}
-export const login = async (req, res) => {
-    const { email, password } = req.body;
-    console.log("Received login request with email:", email); 
-    try {
-        let users = await user.findOne({ email: email });
-        if (!users) {
-            console.log("User not found");
-            return res.status(404).json({ message: "User not found" });
-        }
 
-        const isMatch = await bcrypt.compare(password, users.password);
-        if (isMatch) {
-            console.log("Login successful");
-            return res.json(users); 
-        } else {
-            console.log("Invalid password");
-            return res.status(401).json({ message: "Invalid password" });
-        }
-    } catch (error) {
-        console.log("Error during login: ", error);
-        return res.status(500).json({ message: "An error occurred during login" });
+    const existingUser = await User.findOne({ email: req.body.email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: "Email already exists" });
     }
+
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    console.log(" Hashed Password:", hashedPassword);
+
+    // Set role to "user" by default (admins should be created separately)
+    const userData = { ...req.body, password: hashedPassword, role: "user" };
+
+    const newUser = new User(userData);
+    const savedUser = await newUser.save();
+
+    console.log(" User registered successfully:", savedUser);
+
+    res.status(201).json({ success: true, userId: savedUser._id, userType: savedUser.role });
+
+  } catch (error) {
+    console.error("Registration Error:", error);
+    res.status(500).json({ success: false, message: "An error occurred during registration" });
+  }
 };
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+  console.log("Received login request with email:", email);
 
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      console.log("User not found");
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      console.log("Invalid password");
+      return res.status(401).json({ success: false, message: "Invalid password" });
+    }
+
+    // ✅ Create JWT token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      'abc', // secret key (same as used in middleware)
+      { expiresIn: '1d' }
+    );
+
+    console.log("✅ Login successful for user:", email);
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token: jwt.sign({ id: user._id, role: user.role }, 'abc', { expiresIn: '1d' }),              
+      userId: user._id,
+      userType: user.role,
+    });
+
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred during login",
+      error: error.message,
+    });
+  }
+};
 export const getUserComplaints = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -125,18 +180,21 @@ export const resolveComplaint = async (req, res) => {
   try {
     const { complaintId } = req.params;
 
-    const complaint = await Complaint.findByIdAndUpdate(complaintId, { status: 'Resolved' }, { new: true });
+    const complaint = await Complaint.findByIdAndUpdate(
+      complaintId,
+      { status: "Resolved" },
+      { new: true }
+    );
 
     if (!complaint) {
-      return res.status(404).json({ message: 'Complaint not found' });
+      return res.status(404).json({ message: "Complaint not found" });
     }
 
-    res.status(200).json({ message: 'Complaint resolved successfully', complaint });
+    res.status(200).json(complaint);
   } catch (error) {
-    res.status(500).json({ message: 'Error resolving complaint', error });
+    res.status(500).json({ message: "Error resolving complaint", error });
   }
 };
-
 
 export const deleteComplaint = async (req, res) => {
   try {
@@ -184,14 +242,22 @@ export const complaint = async (req, res) => {
 };
 export const myComplaints = async (req, res) => {
   try {
-    const { id } = req.params;
-    const complaints = await complaint.find({ userId: id });
+    const { userId } = req.params;
 
-    res.status(200).json({ success: true, data: complaints });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid user ID format" });
+    }
+
+    const complaints = await Complaint.find({ userId }).sort({ createdAt: -1 });
+
+    // Wrap complaints in a success response object
+    res.status(200).json({ success: true, complaints });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Error fetching user complaints:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch user complaints" });
   }
 };
+
 
 export const viewComplaints = async (req, res) => {
   try {
@@ -207,31 +273,46 @@ export const viewComplaints = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
 export const updateProfile = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const updates = req.body;
+    const { userId, fullName, mobile, email, dob, state, district, address, idProof, idProofNumber } = req.body;
 
-    const updatedUser = await user.findByIdAndUpdate(userId, updates, {
-      new: true,
-    });
-
-    if (!updatedUser) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid user ID format" });
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-      data: updatedUser,
-    });
+    
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        name: fullName, 
+        mobile,
+        email,
+        dob,
+        state,
+        district,
+        address,
+        idProof,
+        idProofNumber,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Profile updated successfully", data: updatedUser });
+
   } catch (error) {
-    console.error("Profile update error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error(" Error updating profile:", error);
+    res.status(500).json({ success: false, message: "Failed to update profile", error: error.message });
   }
 };
+
 
 export const userDelete = async (req, res) => {
   try {
@@ -252,17 +333,15 @@ export const userDelete = async (req, res) => {
 
 export const allComplaints = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1; // default page = 1
-    const limit = parseInt(req.query.limit) || 10; // default limit = 10
-
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
     const skip = (page - 1) * limit;
 
-    const totalCount = await Complaint.countDocuments(); // Use the correct Mongoose model here
+    const totalCount = await Complaint.countDocuments();
     const totalPages = Math.ceil(totalCount / limit);
 
-    const complaints = await Complaint
-      .find()
-      .populate("userId", "name email")
+    const complaints = await Complaint.find()
+      .populate({ path: "userId", select: "name email mobile dob" })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -274,85 +353,126 @@ export const allComplaints = async (req, res) => {
       totalCount,
     });
   } catch (error) {
-    console.error("Error fetching complaints:", error);
-    res.status(500).json({ message: "Failed to fetch complaints" });
+    console.error("Error fetching complaints:", error.message, error.stack);
+    res.status(500).json({ message: "Failed to fetch complaints", error: error.message });
   }
 };
-
-
-
-export const complaintDetail = async (req, res) => {
-  const complaint = await complaintModel.findById(req.params.id).populate('userId');
-  res.json({ data: complaint });
-}
-export const approveComplaint = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const complaint = await complaintModel.findById(id);
-
-    if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
-    }
-
-    // Update the status to 'approved'
-    complaint.status = "approved";
-    await complaint.save();
-
-    res.status(200).json({ message: "Complaint approved", data: complaint });
-  } catch (error) {
-    console.error("Error approving complaint:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
 
 export const rejectComplaint = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const complaint = await complaintModel.findById(id);
+    const { complaintId } = req.params;
+
+    const complaint = await Complaint.findById(complaintId);
 
     if (!complaint) {
       return res.status(404).json({ message: "Complaint not found" });
     }
 
-    // Update the status to 'rejected'
-    complaint.status = "rejected";
+    complaint.status = "Rejected";
     await complaint.save();
 
-    res.status(200).json({ message: "Complaint rejected", data: complaint });
+    res.status(200).json(complaint);
   } catch (error) {
     console.error("Error rejecting complaint:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error });
   }
 };
+
+
+
 
 
 export const allUsers = async (req, res) => {
   try {
-    const users = await user.find();
-    res.status(200).json({data: users});
+    console.log("📝 Fetching all users..."); 
+
+    const users = await User.find().select("name email mobile address idProof reports");
+
+    console.log("Users fetched successfully:", users.length);
+    res.status(200).json(users); 
   } catch (error) {
-    console.error("Error fetching complaints:", error);
-    res.status(500).json({ message: "Failed to fetch complaints" });
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
   }
-}
+};
+
+export const approveComplaint = async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(complaintId)) {
+      return res.status(400).json({ message: "Invalid complaint ID" });
+    }
+
+    const complaint = await Complaint.findByIdAndUpdate(
+      complaintId,
+      { status: "Approved" },
+      { new: true }
+    );
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    res.status(200).json(complaint);
+  } catch (error) {
+    console.error("Error approving complaint:", error);
+    res.status(500).json({ message: "Error approving complaint", error });
+  }
+};
+
 
 export const addFeedback = async (req, res) => {
   try {
-    const { feedback } = req.body;
+    const { message } = req.body;
 
-    if (!feedback) {
-      return res.status(400).json({ message: 'Feedback is required' });
+    if (!message) {
+      return res.status(400).json({ error: 'Message is required' });
     }
 
-    const newFeedback = new Feedback({ feedback });
+    const newFeedback = new Feedback({ message });
     await newFeedback.save();
 
-    res.status(201).json({ message: 'Feedback added successfully', data: newFeedback });
+    res.status(201).json({ success: true, message: 'Feedback submitted' });
+  } catch (err) {
+    console.error('Error saving feedback:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+export const getComplaintById = async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+
+    const complaint = await Complaint.findById(complaintId)
+      .populate({ path: "userId", select: "name email mobile dob" });
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    res.status(200).json(complaint);
   } catch (error) {
-    console.error('Error adding feedback:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error fetching complaint by ID:", error);
+    res.status(500).json({ message: "Failed to fetch complaint" });
+  }
+};
+export const getAllFeedback = async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find().sort({ date: -1 });
+    res.status(200).json(feedbacks);
+  } catch (err) {
+    console.error('Error fetching feedbacks:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+export const deleteUserAccount = async (req, res) => {
+  try {
+    const userId = req.user.id; // or req.user._id depending on what you encoded in token
+    await User.findByIdAndDelete(userId);
+    res.status(200).json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error deleting account', error });
   }
 };
