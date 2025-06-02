@@ -1,65 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Feedback = () => {
-  const [feedback, setFeedback] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [allFeedbacks, setAllFeedbacks] = useState([]);
 
-  const handleFeedbackChange = (event) => {
-    setFeedback(event.target.value);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!feedback) {
-      setError("Feedback is required");
-      return;
-    }
-
-    try {
-      // Replace the URL below with your actual backend API URL
-      const response = await axios.post("http://localhost:5000/api/feedback", {
-        feedback,
-      });
-
-      if (response.status === 201) {
-        setMessage("Feedback added successfully");
-        setFeedback(""); // Clear feedback input field after successful submission
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/user/getfeedback");
+        setAllFeedbacks(response.data);
+      } catch (err) {
+        console.error("Failed to fetch feedbacks", err);
       }
-    } catch (err) {
-      setError("Error submitting feedback. Please try again later.");
-      console.error("Error adding feedback:", err);
-    }
+    };
+    fetchFeedbacks();
+  }, []);
+
+  
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? "No date available" : date.toLocaleString();
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-6 text-center">Submit Feedback</h2>
-        <form onSubmit={handleSubmit}>
-          <textarea
-            className="w-full p-4 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none mb-4"
-            value={feedback}
-            onChange={handleFeedbackChange}
-            placeholder="Write your feedback here..."
-            rows="5"
-            required
-          ></textarea>
-          <button
-            type="submit"
-            className="w-full py-3 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-300"
-          >
-            Submit Feedback
-          </button>
-        </form>
-
-        {message && (
-          <p className="mt-4 text-green-600 text-center font-medium">{message}</p>
-        )}
-        {error && (
-          <p className="mt-4 text-red-600 text-center font-medium">{error}</p>
+        <h3 className="text-xl font-semibold mb-4">All Feedback</h3>
+        {allFeedbacks.length === 0 ? (
+          <p className="text-gray-600 text-center">No feedback available.</p>
+        ) : (
+          <ul className="space-y-4 max-h-64 overflow-y-auto">
+            {allFeedbacks.map((fb) => (
+              <li key={fb._id} className="border p-4 rounded-md bg-gray-50">
+                {fb.message}
+                <div className="text-sm text-gray-400 mt-1">{formatDate(fb.submittedAt)}</div>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>

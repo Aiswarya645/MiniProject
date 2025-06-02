@@ -22,6 +22,9 @@ import Overview from './Overvier';
 import Overvier from './Overvier';
 import Usermanagement from './Usermanagement';
 import Feedback from './Feedback';
+import ComplaintDetail from './ComplaintDetail';
+import Contact from './Contact';
+import Mycomplaints from './Mycomplaints';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -38,13 +41,16 @@ root.render(
       <Route path="/CivicE" element={<CivicE></CivicE>} />
       <Route path="/profile" element={<Profile></Profile>} />
       <Route path="/View" element={<View></View>} />
-       <Route path="/about" element={<About></About>} />
-        <Route path="/complaints" element={<Complaints></Complaints>} />
-         <Route path="/usermanagement" element={<Usermanagement></Usermanagement>} />
-          <Route path="/commanage" element={<Com></Com>} />
-         <Route path="/overview" element={<Overvier></Overvier>} />
-         <Route path="/feedback" element={<Feedback></Feedback>} />
-
+      <Route path="/about" element={<About></About>} />
+      <Route path="/complaints/:complaintId" element={<Complaints></Complaints>} />
+      <Route path="/usermanagement" element={<Usermanagement></Usermanagement>} />
+      <Route path="/commanage" element={<Com></Com>} />
+      <Route path="/overview" element={<Overvier></Overvier>} />
+      <Route path="/feedback" element={<Feedback></Feedback>} />
+      <Route path="/complaint/:complaintId" element={<ComplaintDetail />} />
+      <Route path="/contact" element={<Contact></Contact>} />
+        <Route path="/mycomplaint" element={<Mycomplaints></Mycomplaints>} />
+      
     </Routes>
   </BrowserRouter>
 </React.StrictMode>

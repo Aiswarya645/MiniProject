@@ -8,10 +8,19 @@ const Usermanagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/user/allUsers");
-        setUsers(res.data.data);
+        const res = await axios.get(`http://localhost:5000/user/allUsers?timestamp=${Date.now()}`);
+        console.log("✅ Users fetched:", res.data); // Debugging log
+
+        // Check if data is an array
+        if (Array.isArray(res.data)) {
+          setUsers(res.data);
+        } else {
+          console.warn("Unexpected response structure:", res.data);
+          setUsers([]);
+        }
       } catch (err) {
-        console.error("Failed to fetch users:", err);
+        console.error("❌ Failed to fetch users:", err);
+        setUsers([]);
       } finally {
         setLoading(false);
       }
@@ -47,7 +56,7 @@ const Usermanagement = () => {
               <tr key={user._id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-3 text-sm">{user.name || "—"}</td>
                 <td className="px-4 py-3 text-sm">{user.email || "—"}</td>
-                <td className="px-4 py-3 text-sm">{user.number || "—"}</td>
+                <td className="px-4 py-3 text-sm">{user.mobile || "—"}</td>
                 <td className="px-4 py-3 text-sm">{user.address || "—"}</td>
                 <td className="px-4 py-3 text-sm">{user.idProof || "—"}</td>
                 <td className="px-4 py-3 text-sm">{user.reports || "—"}</td>
@@ -61,4 +70,3 @@ const Usermanagement = () => {
 };
 
 export default Usermanagement;
-

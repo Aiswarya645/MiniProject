@@ -6,6 +6,7 @@ import Complaints from "./Complaints";
 
 import Overvier from "./Overvier";
 import Usermanagement from "./Usermanagement";
+import Feedback from "./Feedback";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -27,7 +28,7 @@ const Dashboard = () => {
             onClick={() => setActiveTab("overview")}
           >
             <MdOutlineViewCarousel size={28} />
-            <h1 className="text-xl">Overvier</h1>
+            <h1 className="text-xl">Overview</h1>
           </div>
 
           <div
@@ -73,11 +74,8 @@ const Dashboard = () => {
           {activeTab === "overview" && <Overvier/>}
           {activeTab === 'userManagement' && <Usermanagement/>}
           {activeTab === "complaints" && <Complaints />}
-          {activeTab === "feedback" && (
-            <p className="text-lg text-gray-700">
-              Feedback section coming soon...
-            </p>
-          )}
+          {activeTab === "feedback" &&  <Feedback />}
+
         </div>
       </div>
     </div>

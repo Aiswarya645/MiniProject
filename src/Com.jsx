@@ -1,88 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const ComplaintManagement = () => {
+const UserComplaints = () => {
   const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Fetch user ID from localStorage
+  const userId = localStorage.getItem("userId");
+useEffect(() => {
+  const fetchUserComplaints = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  useEffect(() => {
-    const fetchComplaints = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/admin/complaints');
-        setComplaints(response.data);
-      } catch (error) {
-        console.error("Failed to fetch complaints:", error);
+      if (!userId) {
+        setError("User not found. Please log in.");
+        setLoading(false);
+        return;
       }
-    };
 
-    fetchComplaints();
-  }, []);
-
-  const handleResolve = async (complaintId) => {
-    try {
-      await axios.put(`http://localhost:5000/admin/complaints/resolve/${complaintId}`);
-      setComplaints(complaints.map(complaint =>
-        complaint._id === complaintId ? { ...complaint, status: 'Resolved' } : complaint
-      ));
-    } catch (error) {
-      console.error("Failed to resolve complaint:", error);
+      const res = await axios.get(`http://localhost:5000/user/myComplaints/${userId}`);
+      console.log("✅ Complaints Data:", res.data); // Debugging API response
+      setComplaints(res.data);
+    } catch (err) {
+      console.error("❌ Error fetching user complaints:", err);
+      setError("Failed to load complaints. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (complaintId) => {
-    try {
-      await axios.delete(`http://localhost:5000/admin/complaints/delete/${complaintId}`);
-      setComplaints(complaints.filter(complaint => complaint._id !== complaintId));
-    } catch (error) {
-      console.error("Failed to delete complaint:", error);
-    }
-  };
+  fetchUserComplaints();
+}, [userId]);
+
+
+  if (loading) return <p className="text-center py-4">Loading...</p>;
+  if (error) return <p className="text-center text-red-500 py-4">{error}</p>;
 
   return (
-    <div className="p-10 bg-gray-100">
-      <h1 className="text-xl font-bold mb-4">Complaint Management</h1>
-      <table className="min-w-full bg-white border border-gray-300 rounded-lg">
-        <thead>
-          <tr>
-            <th className="px-6 py-4 border-b">ID</th>
-            <th className="px-6 py-4 border-b">Description</th>
-            <th className="px-6 py-4 border-b">Type</th>
-            <th className="px-6 py-4 border-b">Location</th>
-            <th className="px-6 py-4 border-b">Status</th>
-            <th className="px-6 py-4 border-b">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {complaints.map((complaint) => (
-            <tr key={complaint._id}>
-              <td className="px-6 py-4 border-b">{complaint._id}</td>
-              <td className="px-6 py-4 border-b">{complaint.description}</td>
-              <td className="px-6 py-4 border-b">{complaint.complaintType}</td>
-              <td className="px-6 py-4 border-b">{complaint.location}</td>
-              <td className="px-6 py-4 border-b">{complaint.status}</td>
-              <td className="px-6 py-4 border-b">
-                {complaint.status !== 'Resolved' ? (
-                  <button
-                    onClick={() => handleResolve(complaint._id)}
-                    className="px-4 py-2 bg-green-500 text-white rounded mr-2"
-                  >
-                    Resolve
-                  </button>
-                ) : (
-                  <span className="text-green-500">Resolved</span>
-                )}
-                <button
-                  onClick={() => handleDelete(complaint._id)}
-                  className="px-4 py-2 bg-red-500 text-white rounded"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4">My Complaints</h2>
+
+      {complaints.length === 0 ? (
+        <p className="text-center text-gray-500">You haven't submitted any complaints yet.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border border-gray-300">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="py-3 px-4 border">Date</th>
+                <th className="py-3 px-4 border">Description</th>
+                <th className="py-3 px-4 border">Location</th>
+                <th className="py-3 px-4 border">Status</th>
+                <th className="py-3 px-4 border">Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {complaints.map((complaint) => (
+                <tr key={complaint._id} className="border-b">
+                  <td className="px-4 py-3">{new Date(complaint.createdAt).toLocaleDateString()}</td>
+                  <td className="px-4 py-3">{complaint.description || "No description"}</td>
+                  <td className="px-4 py-3">{complaint.location || "No location"}</td>
+                  <td className="px-4 py-3">{complaint.status || "Pending"}</td>
+                  <td className="px-4 py-3">{complaint.complaintType || "Unknown"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ComplaintManagement;
+export default UserComplaints;
