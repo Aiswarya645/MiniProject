@@ -15,7 +15,7 @@ const Sign = () => {
     console.log("Submitting data:", data);
 
     try {
-      const response = await axios.post("http://localhost:5000/user/login", data);
+      const response = await axios.post("https://miniproject-t63v.onrender.com/user/login", data);
       console.log("Response:", response);
 
       if (response.data.success) {

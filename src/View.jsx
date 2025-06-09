@@ -3,25 +3,25 @@ import axios from 'axios';
 
 const View = () => {
   const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading] = useState(true);  // To track loading state
-  const [error, setError] = useState(null);      // To track error state
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null);      
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/user/getUserComplaints');
+        const res = await axios.get('https://miniproject-t63v.onrender.com/user/getUserComplaints');
         setComplaints(res.data);
       } catch (err) {
         setError('Failed to fetch complaints');
         console.error("Error fetching complaints:", err);
       } finally {
-        setLoading(false);  // Set loading to false after request completes
+        setLoading(false);  
       }
     };
     fetchData();
   }, []);
 
-  // Return loading or error state if applicable
+  
   if (loading) {
     return <div className="text-center text-xl">Loading complaints...</div>;
   }

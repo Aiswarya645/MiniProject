@@ -8,10 +8,10 @@ const Usermanagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/user/allUsers?timestamp=${Date.now()}`);
-        console.log("✅ Users fetched:", res.data); // Debugging log
+        const res = await axios.get(`https://miniproject-t63v.onrender.com/user/allUsers?timestamp=${Date.now()}`);
+        console.log("✅ Users fetched:", res.data); 
 
-        // Check if data is an array
+        
         if (Array.isArray(res.data)) {
           setUsers(res.data);
         } else {
@@ -19,7 +19,7 @@ const Usermanagement = () => {
           setUsers([]);
         }
       } catch (err) {
-        console.error("❌ Failed to fetch users:", err);
+        console.error(" Failed to fetch users:", err);
         setUsers([]);
       } finally {
         setLoading(false);

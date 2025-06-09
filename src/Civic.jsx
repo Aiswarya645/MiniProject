@@ -14,7 +14,7 @@ import axios from "axios";
 
 const Civic = () => {
   const [feedback, setFeedback] = useState('');
-  const [message, setMessage] = useState(''); // added message state
+  const [message, setMessage] = useState(''); 
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +23,7 @@ const Civic = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/user/feedback', { message: feedback });
+      await axios.post('https://miniproject-t63v.onrender.com/user/feedback', { message: feedback });
       setMessage('Feedback submitted successfully!');
       setFeedback('');
     } catch (err) {
@@ -176,14 +176,13 @@ const Civic = () => {
            key={i}
            className="bg-white border border-cyan-600 rounded-xl shadow-md flex items-center p-6 w-full max-w-2xl min-h-[180px]"
          >
-           {/* Square Image */}
+           
            <img
              src={img3}
              alt={title}
              className="h-32 w-32 object-cover mr-6 border border-gray-300"
            />
      
-           {/* Content */}
            <div className="flex flex-col justify-center">
              <h3 className="text-2xl font-bold mb-2">{title}</h3>
              <p className="text-base text-gray-700 mb-2">{desc}</p>

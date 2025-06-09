@@ -16,7 +16,7 @@ const ComplaintDetail = () => {
         setLoading(true);
         setError(null);
 
-        const res = await axios.get(`http://localhost:5000/user/complaint/${complaintId}`);
+        const res = await axios.get(`https://miniproject-t63v.onrender.com/user/complaint/${complaintId}`);
         console.log("📥 Complaint Data:", res.data);
 
         setComplaint(res.data);
@@ -33,9 +33,9 @@ const ComplaintDetail = () => {
 
   const handleApprove = async () => {
     try {
-      const res = await axios.put(`http://localhost:5000/user/approve/${complaintId}`);
+      const res = await axios.put(`https://miniproject-t63v.onrender.com/user/approve/${complaintId}`);
       toast.success("Complaint Approved!");
-      setComplaint(res.data); // ✅ Updated
+      setComplaint(res.data); 
     } catch (err) {
       console.error("Error approving complaint:", err);
       toast.error("Failed to approve the complaint.");
@@ -44,9 +44,9 @@ const ComplaintDetail = () => {
 
   const handleReject = async () => {
     try {
-      const res = await axios.put(`http://localhost:5000/user/reject/${complaintId}`);
+      const res = await axios.put(`https://miniproject-t63v.onrender.com/user/reject/${complaintId}`);
       toast.success("Complaint Rejected!");
-      setComplaint(res.data); // ✅ Updated
+      setComplaint(res.data); 
     } catch (err) {
       console.error("Error rejecting complaint:", err);
       toast.error("Failed to reject the complaint.");
@@ -55,9 +55,9 @@ const ComplaintDetail = () => {
 
   const handleResolve = async () => {
     try {
-      const res = await axios.put(`http://localhost:5000/user/resolve/${complaintId}`);
+      const res = await axios.put(`https://miniproject-t63v.onrender.com/user/resolve/${complaintId}`);
       toast.success("Complaint Resolved!");
-      setComplaint(res.data); // ✅ Updated
+      setComplaint(res.data); 
     } catch (err) {
       console.error("Error resolving complaint:", err);
       toast.error("Failed to resolve the complaint.");
@@ -73,7 +73,7 @@ const ComplaintDetail = () => {
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Complaint Details</h2>
 
       <div className="bg-gray-100 p-4 rounded-md">
-        <p className="text-lg"><strong>ID:</strong> {complaint._id}</p>
+
         <p className="text-lg"><strong>Description:</strong> {complaint.description}</p>
         <p className="text-lg"><strong>Location:</strong> {complaint.location}</p>
         <p className="text-lg"><strong>Status:</strong>

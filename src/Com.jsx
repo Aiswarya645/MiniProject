@@ -6,7 +6,7 @@ const UserComplaints = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Fetch user ID from localStorage
+  
   const userId = localStorage.getItem("userId");
 useEffect(() => {
   const fetchUserComplaints = async () => {
@@ -20,11 +20,11 @@ useEffect(() => {
         return;
       }
 
-      const res = await axios.get(`http://localhost:5000/user/myComplaints/${userId}`);
-      console.log("✅ Complaints Data:", res.data); // Debugging API response
+      const res = await axios.get(`https://miniproject-t63v.onrender.com/user/myComplaints/${userId}`);
+      console.log("✅ Complaints Data:", res.data); 
       setComplaints(res.data);
     } catch (err) {
-      console.error("❌ Error fetching user complaints:", err);
+      console.error(" Error fetching user complaints:", err);
       setError("Failed to load complaints. Please try again.");
     } finally {
       setLoading(false);

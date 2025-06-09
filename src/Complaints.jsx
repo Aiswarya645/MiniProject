@@ -17,7 +17,7 @@ const Complaints = () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get(`http://localhost:5000/user/allComplaints?page=${page}&limit=${limit}`);
+        const res = await axios.get(`https://miniproject-t63v.onrender.com/user/allComplaints?page=${page}&limit=${limit}`);
         setComplaints(res.data.data);
         setTotalPages(res.data.totalPages);
       } catch (err) {
@@ -129,7 +129,7 @@ const Complaints = () => {
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={(e) => {
-                          e.stopPropagation(); // ✅ Prevent row navigation
+                          e.stopPropagation(); 
                           downloadComplaintAsPDF(complaint);
                         }}
                         className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"

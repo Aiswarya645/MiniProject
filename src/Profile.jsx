@@ -31,7 +31,7 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    const response = await axios.put("http://localhost:5000/user/updateprofile", {
+    const response = await axios.put("https://miniproject-t63v.onrender.com/user/updateprofile", {
       userId,
       ...formData,
     });

@@ -7,7 +7,7 @@ const Feedback = () => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/user/getfeedback");
+        const response = await axios.get("https://miniproject-t63v.onrender.com/user/getfeedback");
         setAllFeedbacks(response.data);
       } catch (err) {
         console.error("Failed to fetch feedbacks", err);

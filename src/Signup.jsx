@@ -15,18 +15,18 @@ const Signup = () => {
 
   const userData = {
     ...data,
-    userType: "user" // ✅ Add default userType here
+    userType: "user" 
   };
 
-  console.log("📤 Submitting registration data:", userData);
+  console.log(" Submitting registration data:", userData);
 
   try {
-    const response = await axios.post("http://localhost:5000/user/register", userData);
+    const response = await axios.post("https://miniproject-t63v.onrender.com/user/register", userData);
     console.log("Registration Response:", response.data);
 
     if (response.data.success) {
       alert("Registration successful! Please log in.");
-      navigate("/signs"); // ✅ Go to login
+      navigate("/signs"); 
     } else {
       alert(response.data.message);
     }

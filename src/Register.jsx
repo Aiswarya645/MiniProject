@@ -43,7 +43,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/user/addimage",
+        "https://miniproject-t63v.onrender.com/user/addimage",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

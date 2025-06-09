@@ -38,13 +38,13 @@ const CivicE = () => {
   const handleDeleteAccount = async () => {
   try {
     const token = localStorage.getItem('token'); 
-    const res = await axios.delete('http://localhost:5000/user/delete', {
+    const res = await axios.delete('https://miniproject-t63v.onrender.com/user/delete', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     console.log(res.data.message);
-    // Optional: redirect or logout user
+    
   } catch (error) {
     console.error('Error deleting account:', error);
   }
@@ -58,7 +58,7 @@ const CivicE = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/user/feedback', { message: feedback });
+      await axios.post('https://miniproject-t63v.onrender.com/user/feedback', { message: feedback });
       setMessage('Feedback submitted successfully!');
       setFeedback('');
     } catch (err) {
@@ -67,7 +67,7 @@ const CivicE = () => {
     }
   };
 
-  // Close dropdown on outside click
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -80,7 +80,7 @@ const CivicE = () => {
 
   return (
     <div className="font-sans text-gray-800 bg-gray-50 min-h-screen">
-      {/* Navbar */}
+      
       <nav className="flex justify-between items-center px-10 py-4 border-b shadow bg-white">
         <h2 className="text-3xl font-bold text-blue-600">
           Civic<span className="text-black">EYE</span>
@@ -94,7 +94,7 @@ const CivicE = () => {
             <p className="cursor-pointer hover:underline">Contact</p>
           </Link>
 
-          {/* Profile Dropdown */}
+          
           <div className="relative" ref={dropdownRef}>
             <img
               src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
@@ -159,18 +159,21 @@ const CivicE = () => {
   <h2 className="text-2xl font-bold mb-6">Register Complaints</h2>
   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
     {[
-      { label: 'Waste Dumping', icon: <FaTrash size={24} /> },
-      { label: 'Public Nuisance', icon: <FaBullhorn size={24} /> },
-      { label: 'Traffic Violations', icon: <FaCarCrash size={24} /> },
-      { label: 'Others', icon: <FaEllipsisH size={24} /> }
-    ].map((item, index) => (
-      <div key={index} className="border border-gray-300 bg-white p-4 rounded shadow hover:shadow-md cursor-pointer">
-        <div className="w-12 h-12 mx-auto bg-blue-100 text-blue-600 flex items-center justify-center rounded-full mb-3 text-xl">
-          {item.icon}
-        </div>
-        <p className="font-semibold">{item.label}</p>
+  { label: 'Waste Dumping', icon: <FaTrash size={24} /> },
+  { label: 'Public Nuisance', icon: <FaBullhorn size={24} /> },
+  { label: 'Traffic Violations', icon: <FaCarCrash size={24} /> },
+  { label: 'Others', icon: <FaEllipsisH size={24} /> }
+].map((item, index) => (
+  <Link to="/register" key={index}>
+    <div className="border border-gray-300 bg-white p-4 rounded shadow hover:shadow-md cursor-pointer">
+      <div className="w-12 h-12 mx-auto bg-blue-100 text-blue-600 flex items-center justify-center rounded-full mb-3 text-xl">
+        {item.icon}
       </div>
-    ))}
+      <p className="font-semibold">{item.label}</p>
+    </div>
+  </Link>
+))}
+
   </div>
 </section>
 
@@ -273,14 +276,14 @@ const CivicE = () => {
       key={i}
       className="bg-white border border-cyan-600 rounded-xl shadow-md flex items-center p-6 w-full max-w-2xl min-h-[180px]"
     >
-      {/* Square Image */}
+      
       <img
         src={img3}
         alt={title}
         className="h-32 w-32 object-cover mr-6 border border-gray-300"
       />
 
-      {/* Content */}
+      
       <div className="flex flex-col justify-center">
         <h3 className="text-2xl font-bold mb-2">{title}</h3>
         <p className="text-base text-gray-700 mb-2">{desc}</p>
@@ -295,7 +298,7 @@ const CivicE = () => {
 
        <footer className="bg-black text-white mt-10 px-10 py-6 text-sm">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-        {/* Phone Numbers */}
+       
         <div>
           <h3 className="font-semibold border-l-4 border-cyan-500 pl-2 mb-3">Phone Numbers</h3>
           <p>
@@ -313,7 +316,7 @@ const CivicE = () => {
           </p>
         </div>
 
-        {/* Contact Info */}
+        
         <div>
           <h3 className="font-semibold border-l-4 border-cyan-500 pl-2 mb-3">Contact Info</h3>
           <ul className="space-y-2 list-disc list-inside text-cyan-400">
@@ -326,7 +329,7 @@ const CivicE = () => {
           </ul>
         </div>
 
-        {/* Quick Links */}
+        
         <div>
           <h3 className="font-semibold border-l-4 border-cyan-500 pl-2 mb-3">Quick Links</h3>
           <ul className="space-y-2 list-disc list-inside text-cyan-400">
@@ -346,7 +349,7 @@ const CivicE = () => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
+      
       <div className="text-center text-gray-400 mt-6 text-xs">
         © CivicEye 2025 | Empowering Citizens, Improving Communities.
       </div>

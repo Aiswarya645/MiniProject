@@ -18,7 +18,7 @@ const Mycomplaints = () => {
       }
 
       try {
-        const response = await axios.get(`${backendUrl}/user/mycomplaints/${userId}`);
+        const response = await axios.get(`https://miniproject-t63v.onrender.com/user/mycomplaints/${userId}`);
         if (response.data.success) {
           setComplaints(response.data.complaints);
         } else {

@@ -36,13 +36,13 @@ const Overvier = () => {
   const now = new Date();
   const currentYear = now.getFullYear();
 
-  // Use all months (0-11) for navigation
+  
   const [currentMonthIndex, setCurrentMonthIndex] = useState(now.getMonth());
 
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/user/allComplaints");
+        const res = await axios.get("https://miniproject-t63v.onrender.com/user/allComplaints");
         setComplaints(res.data.data || []);
       } catch (err) {
         console.error("Failed to fetch complaints:", err);
@@ -53,7 +53,7 @@ const Overvier = () => {
     fetchComplaints();
   }, []);
 
-  // Complaints per month for current year only
+  
   const barData = monthNames.map((month, index) => {
     const monthComplaints = complaints.filter((c) => {
       const d = new Date(c.createdAt);
@@ -64,13 +64,13 @@ const Overvier = () => {
 
   const currentMonth = monthNames[currentMonthIndex];
 
-  // Complaints for the selected month & year
+  
   const monthComplaints = complaints.filter((c) => {
     const d = new Date(c.createdAt);
     return d.getMonth() === currentMonthIndex && d.getFullYear() === currentYear;
   });
 
-  // Filter complaints by status
+  
   const approvedComplaints = monthComplaints.filter(
     (c) => c.status?.toLowerCase() === "approved"
   );
@@ -81,7 +81,7 @@ const Overvier = () => {
     (c) => c.status?.toLowerCase() === "rejected"
   );
 
-  // Prepare pie chart data for complaint locations in selected month
+  
   const getPieDataForMonth = (monthIndex) => {
     const monthComplaints = complaints.filter((c) => {
       const d = new Date(c.createdAt);
@@ -102,7 +102,7 @@ const Overvier = () => {
 
   const pieData = getPieDataForMonth(currentMonthIndex);
 
-  // Navigation handlers
+  
   const nextMonth = () => {
     if (currentMonthIndex < monthNames.length - 1)
       setCurrentMonthIndex((prev) => prev + 1);
