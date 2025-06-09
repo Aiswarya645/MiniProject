@@ -73,7 +73,7 @@ const ComplaintDetail = () => {
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Complaint Details</h2>
 
       <div className="bg-gray-100 p-4 rounded-md">
-        <p className="text-lg"><strong>ID:</strong> {complaint._id}</p>
+        
         <p className="text-lg"><strong>Description:</strong> {complaint.description}</p>
         <p className="text-lg"><strong>Location:</strong> {complaint.location}</p>
         <p className="text-lg"><strong>Status:</strong>
