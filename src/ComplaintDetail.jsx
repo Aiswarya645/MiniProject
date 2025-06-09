@@ -73,11 +73,15 @@ const ComplaintDetail = () => {
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">Complaint Details</h2>
 
       <div className="bg-gray-100 p-4 rounded-md">
-
         <p className="text-lg"><strong>Description:</strong> {complaint.description}</p>
         <p className="text-lg"><strong>Location:</strong> {complaint.location}</p>
         <p className="text-lg"><strong>Status:</strong>
-          <span className={`ml-2 font-bold ${complaint.status === 'Approved' ? 'text-green-500' : complaint.status === 'Rejected' ? 'text-red-500' : complaint.status === 'Resolved' ? 'text-blue-500' : 'text-yellow-500'}`}>
+          <span className={`ml-2 font-bold ${
+            complaint.status === 'Approved' ? 'text-green-500' :
+            complaint.status === 'Rejected' ? 'text-red-500' :
+            complaint.status === 'Resolved' ? 'text-blue-500' :
+            'text-yellow-500'
+          }`}>
             {complaint.status}
           </span>
         </p>
