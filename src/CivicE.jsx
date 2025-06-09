@@ -162,7 +162,7 @@ const CivicE = () => {
   { label: 'Waste Dumping', icon: <FaTrash size={24} /> },
   { label: 'Public Nuisance', icon: <FaBullhorn size={24} /> },
   { label: 'Traffic Violations', icon: <FaCarCrash size={24} /> },
-  { label: 'Others', icon: <FaEllipsisH size={24} /> }
+  { label: 'Illegeal Construction', icon: <FaEllipsisH size={24} /> }
 ].map((item, index) => (
   <Link to="/register" key={index}>
     <div className="border border-gray-300 bg-white p-4 rounded shadow hover:shadow-md cursor-pointer">

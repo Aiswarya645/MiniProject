@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const backendUrl = "http://localhost:5000";
+const backendUrl = "https://miniproject-t63v.onrender.com";
 
 const Mycomplaints = () => {
   const [complaints, setComplaints] = useState([]);
