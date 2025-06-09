@@ -39,7 +39,7 @@ const Civic = () => {
           Civic<span className="text-black">EYE</span>
         </h2>
         <div className="flex items-center space-x-10">
-          <Link to='/civicE'>
+          <Link to='/civic'>
             <p className="cursor-pointer hover:font-semibold">Home</p>
           </Link>
           <Link to='/about'>

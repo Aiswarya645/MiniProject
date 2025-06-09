@@ -30,7 +30,7 @@ const Sign = () => {
         if (response.data.userType === "admin") {
           navigate("/dash");
         } else {
-          navigate("/register"); 
+          navigate("/CivicE"); 
         }
 
       } else {
